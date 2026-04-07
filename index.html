@@ -6,34 +6,25 @@
     <title>Pusat Materi PKA | BKPSDM Ciamis</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #1e3a5f;
             --primary-dark: #0f2c48;
-            --primary-light: #2c4e7a;
             --accent: #b68b40;
             --accent-dark: #9b6e2e;
-            --accent-light: #d4a85c;
             --text-dark: #1e293b;
             --text-muted: #5a6e8c;
-            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
             --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
             --shadow-lg: 0 20px 35px -10px rgba(0, 0, 0, 0.15);
             --transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
-
         body {
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             color: var(--text-dark);
             line-height: 1.5;
             min-height: 100vh;
         }
-
         .unified-bg {
             background-image: url('https://i.ibb.co.com/tTHsc01C/Untitled-design.png');
             background-size: cover;
@@ -42,7 +33,6 @@
             background-repeat: no-repeat;
             position: relative;
         }
-
         .unified-bg::before {
             content: '';
             position: absolute;
@@ -54,7 +44,6 @@
             backdrop-filter: blur(3px);
             z-index: 0;
         }
-
         .app-container {
             max-width: 1280px;
             margin: 0 auto;
@@ -62,7 +51,6 @@
             position: relative;
             z-index: 2;
         }
-
         .hero-header {
             position: relative;
             border-radius: 28px;
@@ -71,11 +59,7 @@
             box-shadow: var(--shadow-lg);
             transition: transform 0.3s ease;
         }
-
-        .hero-header:hover {
-            transform: translateY(-3px);
-        }
-
+        .hero-header:hover { transform: translateY(-3px); }
         .hero-header::before {
             content: '';
             position: absolute;
@@ -83,7 +67,6 @@
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.55) 0%, rgba(15, 44, 72, 0.8) 100%);
             z-index: 1;
         }
-
         .hero-bg {
             width: 100%;
             height: 200px;
@@ -91,11 +74,7 @@
             display: block;
             transition: transform 0.5s ease;
         }
-
-        .hero-header:hover .hero-bg {
-            transform: scale(1.02);
-        }
-
+        .hero-header:hover .hero-bg { transform: scale(1.02); }
         .header-content {
             position: absolute;
             bottom: 0;
@@ -110,7 +89,6 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
-
         .logo-area {
             display: flex;
             align-items: center;
@@ -122,28 +100,13 @@
             border: 1px solid rgba(255, 255, 255, 0.25);
             transition: var(--transition);
         }
-
         .logo-area:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: scale(1.02);
         }
-
-        .logo-area img {
-            height: 48px;
-            width: auto;
-        }
-
-        .logo-area span {
-            color: white;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            font-size: 0.9rem;
-        }
-
-        .title-text {
-            text-align: right;
-        }
-
+        .logo-area img { height: 48px; width: auto; }
+        .logo-area span { color: white; font-weight: 500; font-size: 0.9rem; }
+        .title-text { text-align: right; }
         .title-text h1 {
             font-size: 1.4rem;
             font-weight: 700;
@@ -151,13 +114,7 @@
             letter-spacing: -0.2px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-
-        .title-text p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.75rem;
-            font-weight: 400;
-        }
-
+        .title-text p { color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; }
         .main-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -165,7 +122,6 @@
             margin-bottom: 2rem;
             justify-content: center;
         }
-
         .main-btn {
             background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(12px);
@@ -189,7 +145,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .main-btn::before {
             content: '';
             position: absolute;
@@ -200,35 +155,20 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             transition: left 0.5s ease;
         }
-
-        .main-btn:hover::before {
-            left: 100%;
-        }
-
-        .main-btn i {
-            font-size: 1.2rem;
-            color: var(--accent);
-            transition: var(--transition);
-        }
-
+        .main-btn:hover::before { left: 100%; }
+        .main-btn i { font-size: 1.2rem; color: var(--accent); transition: var(--transition); }
         .main-btn.active-main {
             background: var(--primary);
             color: white;
             box-shadow: 0 8px 25px rgba(30, 58, 95, 0.4);
             transform: translateY(-2px);
         }
-
-        .main-btn.active-main i {
-            color: white;
-            transform: scale(1.1);
-        }
-
+        .main-btn.active-main i { color: white; transform: scale(1.1); }
         .main-btn:hover:not(.active-main) {
             background: white;
             transform: translateY(-3px);
             box-shadow: var(--shadow-lg);
         }
-
         .form-card {
             background: rgba(255, 255, 255, 0.97);
             backdrop-filter: blur(10px);
@@ -239,12 +179,10 @@
             border: 1px solid rgba(255, 255, 255, 0.5);
             animation: fadeInUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
-
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .form-title {
             font-size: 1.4rem;
             font-weight: 700;
@@ -256,12 +194,7 @@
             align-items: center;
             gap: 12px;
         }
-
-        .form-title i {
-            color: var(--accent);
-            font-size: 1.6rem;
-        }
-
+        .form-title i { color: var(--accent); font-size: 1.6rem; }
         .form-row {
             display: flex;
             flex-wrap: wrap;
@@ -271,12 +204,7 @@
             padding: 1.5rem;
             border-radius: 24px;
         }
-
-        .input-group {
-            flex: 1;
-            min-width: 220px;
-        }
-
+        .input-group { flex: 1; min-width: 220px; }
         .input-group label {
             display: block;
             font-weight: 600;
@@ -284,12 +212,7 @@
             color: var(--primary-dark);
             font-size: 0.85rem;
         }
-
-        .input-group label i {
-            margin-right: 8px;
-            color: var(--accent);
-        }
-
+        .input-group label i { margin-right: 8px; color: var(--accent); }
         select, input:not([type="submit"]), textarea {
             width: 100%;
             padding: 0.85rem 1rem;
@@ -301,17 +224,11 @@
             outline: none;
             transition: var(--transition);
         }
-
         select:focus, input:focus, textarea:focus {
             border-color: var(--accent);
             box-shadow: 0 0 0 4px rgba(182, 139, 64, 0.15);
         }
-
-        .btn-wrapper {
-            display: flex;
-            justify-content: center;
-        }
-
+        .btn-wrapper { display: flex; justify-content: center; }
         button.submit-btn {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border: none;
@@ -333,12 +250,7 @@
             position: relative;
             overflow: hidden;
         }
-
-        button.submit-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
+        button.submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
         button.submit-btn::before {
             content: '';
             position: absolute;
@@ -349,17 +261,12 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
             transition: left 0.5s ease;
         }
-
-        button.submit-btn:hover:not(:disabled)::before {
-            left: 100%;
-        }
-
+        button.submit-btn:hover:not(:disabled)::before { left: 100%; }
         button.submit-btn:hover:not(:disabled) {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
             transform: translateY(-3px);
             box-shadow: 0 12px 25px rgba(30, 58, 95, 0.35);
         }
-
         .submission-list {
             background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(10px);
@@ -367,7 +274,6 @@
             padding: 1.5rem;
             margin-top: 1rem;
         }
-
         .submission-list h3 {
             font-size: 1.2rem;
             font-weight: 700;
@@ -379,26 +285,10 @@
             border-left: 4px solid var(--accent);
             padding-left: 14px;
         }
-
-        .list-container {
-            max-height: 320px;
-            overflow-y: auto;
-        }
-
-        .list-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .list-container::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
-            border-radius: 10px;
-        }
-
-        .list-container::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 10px;
-        }
-
+        .list-container { max-height: 320px; overflow-y: auto; }
+        .list-container::-webkit-scrollbar { width: 6px; }
+        .list-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
+        .list-container::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
         .submission-item {
             background: white;
             border-radius: 20px;
@@ -412,25 +302,13 @@
             transition: var(--transition);
             border: 1px solid #eef2f8;
         }
-
         .submission-item:hover {
             transform: translateX(5px);
             border-color: var(--accent);
             box-shadow: var(--shadow-md);
         }
-
-        .submission-info {
-            font-size: 0.85rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            align-items: baseline;
-        }
-
-        .submission-info strong {
-            color: var(--primary);
-        }
-
+        .submission-info { font-size: 0.85rem; display: flex; flex-wrap: wrap; gap: 14px; align-items: baseline; }
+        .submission-info strong { color: var(--primary); }
         .file-badge {
             background: rgba(182, 139, 64, 0.12);
             padding: 4px 12px;
@@ -439,20 +317,8 @@
             font-weight: 600;
             color: var(--accent-dark);
         }
-
-        .empty-state {
-            text-align: center;
-            padding: 2.5rem;
-            color: var(--text-muted);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            color: var(--accent);
-            margin-bottom: 1rem;
-            opacity: 0.6;
-        }
-
+        .empty-state { text-align: center; padding: 2.5rem; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; color: var(--accent); margin-bottom: 1rem; opacity: 0.6; }
         .toast-msg {
             position: fixed;
             bottom: 30px;
@@ -471,12 +337,10 @@
             align-items: center;
             gap: 12px;
         }
-
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-
         .footer {
             background: rgba(15, 23, 42, 0.96);
             backdrop-filter: blur(10px);
@@ -486,19 +350,13 @@
             position: relative;
             z-index: 2;
         }
-
-        .footer-container {
-            max-width: 1280px;
-            margin: 0 auto;
-        }
-
+        .footer-container { max-width: 1280px; margin: 0 auto; }
         .footer-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 50px;
             margin-bottom: 40px;
         }
-
         .footer-map h4, .footer-contact h4 {
             font-size: 1.1rem;
             font-weight: 600;
@@ -508,7 +366,6 @@
             display: inline-block;
             padding-bottom: 10px;
         }
-
         .footer-map h4::after, .footer-contact h4::after {
             content: '';
             position: absolute;
@@ -518,7 +375,6 @@
             height: 2px;
             background: var(--accent);
         }
-
         .map-card {
             background: rgba(255, 255, 255, 0.08);
             border-radius: 20px;
@@ -527,19 +383,16 @@
             display: block;
             transition: var(--transition);
         }
-
         .map-card:hover {
             background: rgba(255, 255, 255, 0.12);
             transform: translateY(-3px);
         }
-
         .map-icon-wrapper {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-bottom: 10px;
         }
-
         .map-icon {
             width: 48px;
             height: 48px;
@@ -550,7 +403,6 @@
             justify-content: center;
             color: white;
         }
-
         .contact-item {
             display: flex;
             gap: 14px;
@@ -558,16 +410,8 @@
             font-size: 0.85rem;
             transition: var(--transition);
         }
-
-        .contact-item:hover {
-            transform: translateX(5px);
-        }
-
-        .contact-item i {
-            color: var(--accent);
-            width: 22px;
-        }
-
+        .contact-item:hover { transform: translateX(5px); }
+        .contact-item i { color: var(--accent); width: 22px; }
         .partner-logos {
             display: flex;
             justify-content: center;
@@ -577,24 +421,9 @@
             border-bottom: 1px solid rgba(255,255,255,0.1);
             margin: 15px 0 25px;
         }
-
-        .partner-logo {
-            height: 42px;
-            opacity: 0.7;
-            transition: var(--transition);
-        }
-
-        .partner-logo:hover {
-            opacity: 1;
-            transform: scale(1.05);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            font-size: 0.7rem;
-            color: #64748b;
-        }
-
+        .partner-logo { height: 42px; opacity: 0.7; transition: var(--transition); }
+        .partner-logo:hover { opacity: 1; transform: scale(1.05); }
+        .footer-bottom { text-align: center; font-size: 0.7rem; color: #64748b; }
         .scroll-top {
             position: fixed;
             bottom: 30px;
@@ -614,16 +443,8 @@
             z-index: 999;
             box-shadow: var(--shadow-md);
         }
-
-        .scroll-top.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .scroll-top:hover {
-            transform: translateY(-5px) scale(1.05);
-        }
-
+        .scroll-top.active { opacity: 1; visibility: visible; }
+        .scroll-top:hover { transform: translateY(-5px) scale(1.05); }
         .loading-spinner {
             display: inline-block;
             width: 18px;
@@ -633,15 +454,7 @@
             border-top-color: white;
             animation: spin 0.6s linear infinite;
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        iframe {
-            display: none;
-        }
-
+        @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 750px) {
             .app-container { padding: 1rem; }
             .main-btn { padding: 0.75rem 1.2rem; font-size: 0.85rem; min-width: 140px; }
@@ -710,27 +523,15 @@
 </div>
 <div class="scroll-top" id="scrollTop"><i class="fas fa-arrow-up"></i></div>
 
-<iframe name="hiddenFrame" style="display:none"></iframe>
-
 <script>
-    // Konfigurasi Folder Google Drive (Folder ID dari link yang diberikan)
-    // Biodata: https://drive.google.com/drive/folders/1KSF2WlqiAyK1E7cyhEX5RV4cMA4ZiWvk
-    // RP/RBPMP: https://drive.google.com/drive/folders/14FJoYKIepFfd2fqEeYdxj6r0XFoZRjsA
-    // Bahan Tayang: https://drive.google.com/drive/folders/1relRsRncb5rQUIGgXeFTQA79RRuwAtw1
-    
-    const FOLDER_CONFIG = {
-        biodata: "1KSF2WlqiAyK1E7cyhEX5RV4cMA4ZiWvk",
-        rp: "14FJoYKIepFfd2fqEeYdxj6r0XFoZRjsA",
-        bahan: "1relRsRncb5rQUIGgXeFTQA79RRuwAtw1"
-    };
-    
-    // URL Web App Google Apps Script (tetap sama)
-    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxbjh-cRAxOfZkFnzsnCDFogswKeKdxZ2DcbFgZBkRtKXAL1idnVipNek07YxmEJ7k6/exec";
+    // ==================== KONFIGURASI ====================
+    // ⚠️ GANTI DENGAN URL WEB APP HASIL DEPLOY ANDA! ⚠️
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzjVOE7rxagnIrykQPoIkUPzcg6rA22TXoPBqK0Qrzx3xpnBA8HcGu1X4HKDktIPLA/exec";
     
     let activeMain = "biodata";
     let isUploading = false;
     
-    // Simpan ke localStorage untuk riwayat
+    // Simpan ke localStorage
     function saveSubmissionToLocal(type, data) {
         let submissions = JSON.parse(localStorage.getItem("pka_materi_submissions")) || [];
         const entry = {
@@ -786,8 +587,18 @@
         setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 300); }, 4000);
     }
     
-    // Fungsi upload menggunakan fetch dengan FormData (lebih reliable)
-    async function uploadFileWithFetch(formElement, metadata, successMessage) {
+    // Konversi file ke Base64
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+    
+    // Upload file dengan Base64
+    async function uploadFile(formElement, metadata, successMessage) {
         if (isUploading) {
             showToast("Upload sedang berjalan, harap tunggu...", true);
             return false;
@@ -799,7 +610,7 @@
             return false;
         }
         
-        // Validasi tambahan
+        // Validasi
         const namaInput = formElement.querySelector('#rpNama, #bioNama, #bahanNama');
         if (namaInput && !namaInput.value.trim()) {
             showToast("Nama Widyaiswara harus diisi!", true);
@@ -821,17 +632,13 @@
         btn.disabled = true;
         
         try {
-            const formData = new FormData();
-            formData.append("file", fileInput.files[0]);
+            // Konversi file ke Base64
+            const base64File = await fileToBase64(fileInput.files[0]);
+            const fileName = fileInput.files[0].name;
             
-            // Tambahkan metadata
-            const extendedMetadata = {
-                ...metadata,
-                folderId: FOLDER_CONFIG[metadata.type], // Kirim folder ID tujuan
-                timestamp: new Date().toISOString()
-            };
+            // Siapkan metadata lengkap
+            const extendedMetadata = { ...metadata };
             
-            // Tambahkan data dari form
             if (metadata.type === "biodata") {
                 extendedMetadata.namaWidyaiswara = document.getElementById("bioNama")?.value.trim() || "";
             } else if (metadata.type === "rp") {
@@ -842,43 +649,49 @@
                 extendedMetadata.judul = document.getElementById("bahanJudul")?.value.trim() || "";
             }
             
+            // Kirim ke GAS
+            const formData = new FormData();
             formData.append("metadata", JSON.stringify(extendedMetadata));
+            formData.append("fileData", base64File);
+            formData.append("fileName", fileName);
             
-            // Kirim ke GAS Web App
             const response = await fetch(GAS_WEBAPP_URL, {
                 method: "POST",
-                mode: "no-cors", // karena GAS Web App sudah di-deploy sebagai publik
                 body: formData
             });
             
-            // Karena mode no-cors, response tidak bisa dibaca, tapi kita asumsikan sukses
-            // Simpan ke localStorage dan reset form
-            const fileName = fileInput.files[0].name;
-            const submissionData = { ...metadata, namaFile: fileName };
+            const result = await response.json();
             
-            if (metadata.type === "biodata") {
-                submissionData.namaWidyaiswara = document.getElementById("bioNama")?.value.trim();
-                saveSubmissionToLocal("biodata", submissionData);
-                document.getElementById("bioNama").value = "";
-            } else if (metadata.type === "rp") {
-                submissionData.namaWidyaiswara = document.getElementById("rpNama")?.value.trim();
-                submissionData.jenis = document.getElementById("rpJenis")?.value;
-                saveSubmissionToLocal("rp", submissionData);
-                document.getElementById("rpNama").value = "";
-            } else if (metadata.type === "bahan") {
-                submissionData.namaWidyaiswara = document.getElementById("bahanNama")?.value.trim();
-                submissionData.judul = document.getElementById("bahanJudul")?.value.trim();
-                saveSubmissionToLocal("bahan", submissionData);
-                document.getElementById("bahanNama").value = "";
-                document.getElementById("bahanJudul").value = "";
+            if (result.status === "success") {
+                // Simpan ke localStorage
+                const submissionData = { ...metadata, namaFile: fileName };
+                
+                if (metadata.type === "biodata") {
+                    submissionData.namaWidyaiswara = document.getElementById("bioNama")?.value.trim();
+                    saveSubmissionToLocal("biodata", submissionData);
+                    document.getElementById("bioNama").value = "";
+                } else if (metadata.type === "rp") {
+                    submissionData.namaWidyaiswara = document.getElementById("rpNama")?.value.trim();
+                    submissionData.jenis = document.getElementById("rpJenis")?.value;
+                    saveSubmissionToLocal("rp", submissionData);
+                    document.getElementById("rpNama").value = "";
+                } else if (metadata.type === "bahan") {
+                    submissionData.namaWidyaiswara = document.getElementById("bahanNama")?.value.trim();
+                    submissionData.judul = document.getElementById("bahanJudul")?.value.trim();
+                    saveSubmissionToLocal("bahan", submissionData);
+                    document.getElementById("bahanNama").value = "";
+                    document.getElementById("bahanJudul").value = "";
+                }
+                
+                fileInput.value = "";
+                showToast(successMessage);
+            } else {
+                throw new Error(result.message || "Upload gagal");
             }
-            
-            fileInput.value = "";
-            showToast(successMessage);
             
         } catch (error) {
             console.error("Upload error:", error);
-            showToast("Terjadi kesalahan saat upload. Silakan coba lagi.", true);
+            showToast("Terjadi kesalahan: " + error.message, true);
         } finally {
             isUploading = false;
             btn.innerHTML = originalText;
@@ -906,7 +719,7 @@
             `;
             document.getElementById("uploadBiodataBtn")?.addEventListener("click", () => {
                 const form = document.getElementById("uploadFormBiodata");
-                uploadFileWithFetch(form, { type: "biodata" }, "✅ Biodata berhasil diupload ke Drive (Folder Biodata)!");
+                uploadFile(form, { type: "biodata" }, "✅ Biodata berhasil diupload ke Drive!");
             });
         }
         else if (activeMain === "rp") {
@@ -926,7 +739,7 @@
             document.getElementById("uploadRpBtn")?.addEventListener("click", () => {
                 const form = document.getElementById("uploadFormRp");
                 const jenis = document.getElementById("rpJenis")?.value;
-                uploadFileWithFetch(form, { type: "rp", jenis: jenis }, `✅ Dokumen ${jenis} berhasil diupload ke Drive (Folder RP/RBPMP)!`);
+                uploadFile(form, { type: "rp", jenis: jenis }, `✅ Dokumen ${jenis} berhasil diupload ke Drive!`);
             });
         }
         else if (activeMain === "bahan") {
@@ -945,7 +758,7 @@
             `;
             document.getElementById("uploadBahanBtn")?.addEventListener("click", () => {
                 const form = document.getElementById("uploadFormBahan");
-                uploadFileWithFetch(form, { type: "bahan" }, "✅ Bahan tayang berhasil diupload ke Drive (Folder Bahan Tayang)!");
+                uploadFile(form, { type: "bahan" }, "✅ Bahan tayang berhasil diupload ke Drive!");
             });
         }
     }
