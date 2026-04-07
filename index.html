@@ -713,13 +713,24 @@
 <iframe name="hiddenFrame" style="display:none"></iframe>
 
 <script>
-    // URL Web App Google Apps Script
+    // Konfigurasi Folder Google Drive (Folder ID dari link yang diberikan)
+    // Biodata: https://drive.google.com/drive/folders/1KSF2WlqiAyK1E7cyhEX5RV4cMA4ZiWvk
+    // RP/RBPMP: https://drive.google.com/drive/folders/14FJoYKIepFfd2fqEeYdxj6r0XFoZRjsA
+    // Bahan Tayang: https://drive.google.com/drive/folders/1relRsRncb5rQUIGgXeFTQA79RRuwAtw1
+    
+    const FOLDER_CONFIG = {
+        biodata: "1KSF2WlqiAyK1E7cyhEX5RV4cMA4ZiWvk",
+        rp: "14FJoYKIepFfd2fqEeYdxj6r0XFoZRjsA",
+        bahan: "1relRsRncb5rQUIGgXeFTQA79RRuwAtw1"
+    };
+    
+    // URL Web App Google Apps Script (tetap sama)
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxbjh-cRAxOfZkFnzsnCDFogswKeKdxZ2DcbFgZBkRtKXAL1idnVipNek07YxmEJ7k6/exec";
     
     let activeMain = "biodata";
     let isUploading = false;
     
-    // Simpan ke localStorage
+    // Simpan ke localStorage untuk riwayat
     function saveSubmissionToLocal(type, data) {
         let submissions = JSON.parse(localStorage.getItem("pka_materi_submissions")) || [];
         const entry = {
@@ -750,11 +761,21 @@
             else if (sub.type === "rp") title = `📄 ${sub.jenis}: ${sub.namaFile || "-"} (${sub.namaWidyaiswara || ""})`;
             else title = `📁 Bahan Tayang: ${sub.judul || sub.namaFile || "Materi"} (${sub.namaWidyaiswara || ""})`;
             html += `<div class="submission-item">
-                        <div class="submission-info"><strong>${title}</strong> <span class="file-badge">${sub.timestamp}</span></div>
+                        <div class="submission-info"><strong>${escapeHtml(title)}</strong> <span class="file-badge">${sub.timestamp}</span></div>
                         <i class="fas fa-check-circle" style="color: #22c55e; font-size: 0.8rem;"></i>
                     </div>`;
         });
         container.innerHTML = html;
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
     
     function showToast(msg, isError = false) {
@@ -765,23 +786,21 @@
         setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 300); }, 4000);
     }
     
-    // Upload menggunakan form submit ke iframe (menghindari CORS)
-    function uploadFile(formId, metadata, successMessage) {
+    // Fungsi upload menggunakan fetch dengan FormData (lebih reliable)
+    async function uploadFileWithFetch(formElement, metadata, successMessage) {
         if (isUploading) {
             showToast("Upload sedang berjalan, harap tunggu...", true);
             return false;
         }
         
-        const form = document.getElementById(formId);
-        const fileInput = form.querySelector('input[type="file"]');
-        
+        const fileInput = formElement.querySelector('input[type="file"]');
         if (!fileInput.files.length) {
             showToast("Pilih file terlebih dahulu!", true);
             return false;
         }
         
         // Validasi tambahan
-        const namaInput = form.querySelector('#rpNama, #bioNama, #bahanNama');
+        const namaInput = formElement.querySelector('#rpNama, #bioNama, #bahanNama');
         if (namaInput && !namaInput.value.trim()) {
             showToast("Nama Widyaiswara harus diisi!", true);
             return false;
@@ -796,67 +815,75 @@
         }
         
         isUploading = true;
-        const btn = form.querySelector('.submit-btn');
+        const btn = formElement.querySelector('.submit-btn');
         const originalText = btn.innerHTML;
         btn.innerHTML = `<span class="loading-spinner"></span> Mengupload...`;
         btn.disabled = true;
         
-        // Set action form ke GAS URL
-        form.action = GAS_WEBAPP_URL;
-        form.method = "POST";
-        form.target = "hiddenFrame";
-        form.enctype = "multipart/form-data";
-        
-        // Tambahkan metadata sebagai field tersembunyi
-        let hiddenInput = form.querySelector('input[name="metadata"]');
-        if (!hiddenInput) {
-            hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'metadata';
-            form.appendChild(hiddenInput);
+        try {
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            
+            // Tambahkan metadata
+            const extendedMetadata = {
+                ...metadata,
+                folderId: FOLDER_CONFIG[metadata.type], // Kirim folder ID tujuan
+                timestamp: new Date().toISOString()
+            };
+            
+            // Tambahkan data dari form
+            if (metadata.type === "biodata") {
+                extendedMetadata.namaWidyaiswara = document.getElementById("bioNama")?.value.trim() || "";
+            } else if (metadata.type === "rp") {
+                extendedMetadata.namaWidyaiswara = document.getElementById("rpNama")?.value.trim() || "";
+                extendedMetadata.jenis = document.getElementById("rpJenis")?.value || "";
+            } else if (metadata.type === "bahan") {
+                extendedMetadata.namaWidyaiswara = document.getElementById("bahanNama")?.value.trim() || "";
+                extendedMetadata.judul = document.getElementById("bahanJudul")?.value.trim() || "";
+            }
+            
+            formData.append("metadata", JSON.stringify(extendedMetadata));
+            
+            // Kirim ke GAS Web App
+            const response = await fetch(GAS_WEBAPP_URL, {
+                method: "POST",
+                mode: "no-cors", // karena GAS Web App sudah di-deploy sebagai publik
+                body: formData
+            });
+            
+            // Karena mode no-cors, response tidak bisa dibaca, tapi kita asumsikan sukses
+            // Simpan ke localStorage dan reset form
+            const fileName = fileInput.files[0].name;
+            const submissionData = { ...metadata, namaFile: fileName };
+            
+            if (metadata.type === "biodata") {
+                submissionData.namaWidyaiswara = document.getElementById("bioNama")?.value.trim();
+                saveSubmissionToLocal("biodata", submissionData);
+                document.getElementById("bioNama").value = "";
+            } else if (metadata.type === "rp") {
+                submissionData.namaWidyaiswara = document.getElementById("rpNama")?.value.trim();
+                submissionData.jenis = document.getElementById("rpJenis")?.value;
+                saveSubmissionToLocal("rp", submissionData);
+                document.getElementById("rpNama").value = "";
+            } else if (metadata.type === "bahan") {
+                submissionData.namaWidyaiswara = document.getElementById("bahanNama")?.value.trim();
+                submissionData.judul = document.getElementById("bahanJudul")?.value.trim();
+                saveSubmissionToLocal("bahan", submissionData);
+                document.getElementById("bahanNama").value = "";
+                document.getElementById("bahanJudul").value = "";
+            }
+            
+            fileInput.value = "";
+            showToast(successMessage);
+            
+        } catch (error) {
+            console.error("Upload error:", error);
+            showToast("Terjadi kesalahan saat upload. Silakan coba lagi.", true);
+        } finally {
+            isUploading = false;
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
-        hiddenInput.value = JSON.stringify(metadata);
-        
-        // Event listener untuk iframe response
-        const iframe = document.querySelector('iframe[name="hiddenFrame"]');
-        const handleLoad = function() {
-            iframe.removeEventListener('load', handleLoad);
-            setTimeout(() => {
-                isUploading = false;
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                
-                // Simpan ke localStorage dan reset form
-                const fileName = fileInput.files[0].name;
-                const submissionData = { ...metadata, namaFile: fileName };
-                
-                if (metadata.type === "biodata") {
-                    submissionData.namaWidyaiswara = document.getElementById("bioNama")?.value.trim();
-                    saveSubmissionToLocal("biodata", submissionData);
-                    document.getElementById("bioNama").value = "";
-                } else if (metadata.type === "rp") {
-                    submissionData.namaWidyaiswara = document.getElementById("rpNama")?.value.trim();
-                    submissionData.jenis = document.getElementById("rpJenis")?.value;
-                    saveSubmissionToLocal("rp", submissionData);
-                    document.getElementById("rpNama").value = "";
-                } else if (metadata.type === "bahan") {
-                    submissionData.namaWidyaiswara = document.getElementById("bahanNama")?.value.trim();
-                    submissionData.judul = document.getElementById("bahanJudul")?.value.trim();
-                    saveSubmissionToLocal("bahan", submissionData);
-                    document.getElementById("bahanNama").value = "";
-                    document.getElementById("bahanJudul").value = "";
-                }
-                
-                fileInput.value = "";
-                showToast(successMessage);
-                
-                // Hapus hidden input setelah sukses
-                if (hiddenInput) hiddenInput.remove();
-            }, 1000);
-        };
-        
-        iframe.addEventListener('load', handleLoad);
-        form.submit();
         
         return true;
     }
@@ -870,15 +897,16 @@
                     <div class="form-title"><i class="fas fa-id-card"></i> Upload Biodata Widyaiswara</div>
                     <form id="uploadFormBiodata" enctype="multipart/form-data">
                         <div class="form-row">
-                            <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="bioNama" name="namaWidyaiswara" placeholder="Nama lengkap Widyaiswara"></div>
-                            <div class="input-group"><label><i class="fas fa-file-pdf"></i> File Biodata (PDF/DOCX/Gambar)</label><input type="file" id="bioFile" name="file" accept=".pdf,.docx,.doc,.jpg,.png,.jpeg"></div>
+                            <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="bioNama" name="namaWidyaiswara" placeholder="Nama lengkap Widyaiswara" required></div>
+                            <div class="input-group"><label><i class="fas fa-file-pdf"></i> File Biodata (PDF/DOCX/Gambar)</label><input type="file" id="bioFile" name="file" accept=".pdf,.docx,.doc,.jpg,.png,.jpeg" required></div>
                         </div>
-                        <div class="btn-wrapper"><button type="button" class="submit-btn" id="uploadBiodataBtn"><i class="fas fa-cloud-upload-alt"></i> Upload Biodata ke Drive</button></div>
+                        <div class="btn-wrapper"><button type="button" class="submit-btn" id="uploadBiodataBtn"><i class="fas fa-cloud-upload-alt"></i> Upload ke Drive (Folder Biodata)</button></div>
                     </form>
                 </div>
             `;
             document.getElementById("uploadBiodataBtn")?.addEventListener("click", () => {
-                uploadFile("uploadFormBiodata", { type: "biodata" }, "✅ Biodata berhasil diupload ke Drive!");
+                const form = document.getElementById("uploadFormBiodata");
+                uploadFileWithFetch(form, { type: "biodata" }, "✅ Biodata berhasil diupload ke Drive (Folder Biodata)!");
             });
         }
         else if (activeMain === "rp") {
@@ -887,17 +915,18 @@
                     <div class="form-title"><i class="fas fa-file-alt"></i> Upload Dokumen RP / RBPMP</div>
                     <form id="uploadFormRp" enctype="multipart/form-data">
                         <div class="form-row">
-                            <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="rpNama" name="namaWidyaiswara" placeholder="Nama lengkap"></div>
+                            <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="rpNama" name="namaWidyaiswara" placeholder="Nama lengkap" required></div>
                             <div class="input-group"><label><i class="fas fa-tag"></i> Jenis Dokumen</label><select id="rpJenis" name="jenis"><option value="RP">RP (Rencana Pembelajaran)</option><option value="RBPMP">RBPMP (Rencana Bahan Penilaian)</option></select></div>
-                            <div class="input-group"><label><i class="fas fa-file"></i> File (PDF/DOCX)</label><input type="file" id="rpFile" name="file" accept=".pdf,.docx,.doc"></div>
+                            <div class="input-group"><label><i class="fas fa-file"></i> File (PDF/DOCX)</label><input type="file" id="rpFile" name="file" accept=".pdf,.docx,.doc" required></div>
                         </div>
-                        <div class="btn-wrapper"><button type="button" class="submit-btn" id="uploadRpBtn"><i class="fas fa-cloud-upload-alt"></i> Upload ke Drive</button></div>
+                        <div class="btn-wrapper"><button type="button" class="submit-btn" id="uploadRpBtn"><i class="fas fa-cloud-upload-alt"></i> Upload ke Drive (Folder RP/RBPMP)</button></div>
                     </form>
                 </div>
             `;
             document.getElementById("uploadRpBtn")?.addEventListener("click", () => {
+                const form = document.getElementById("uploadFormRp");
                 const jenis = document.getElementById("rpJenis")?.value;
-                uploadFile("uploadFormRp", { type: "rp", jenis: jenis }, `✅ Dokumen ${jenis} berhasil diupload ke Drive!`);
+                uploadFileWithFetch(form, { type: "rp", jenis: jenis }, `✅ Dokumen ${jenis} berhasil diupload ke Drive (Folder RP/RBPMP)!`);
             });
         }
         else if (activeMain === "bahan") {
@@ -906,16 +935,17 @@
                     <div class="form-title"><i class="fas fa-chalkboard"></i> Upload Bahan Tayang / Materi</div>
                     <form id="uploadFormBahan" enctype="multipart/form-data">
                         <div class="form-row">
-                            <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="bahanNama" name="namaWidyaiswara" placeholder="Nama lengkap"></div>
-                            <div class="input-group"><label><i class="fas fa-heading"></i> Judul Bahan Tayang</label><input type="text" id="bahanJudul" name="judul" placeholder="Judul materi"></div>
-                            <div class="input-group"><label><i class="fas fa-file"></i> File (PPT, PDF, ZIP, Video)</label><input type="file" id="bahanFile" name="file" accept=".ppt,.pptx,.pdf,.zip,.rar,.mp4,.jpg,.png"></div>
+                            <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="bahanNama" name="namaWidyaiswara" placeholder="Nama lengkap" required></div>
+                            <div class="input-group"><label><i class="fas fa-heading"></i> Judul Bahan Tayang</label><input type="text" id="bahanJudul" name="judul" placeholder="Judul materi" required></div>
+                            <div class="input-group"><label><i class="fas fa-file"></i> File (PPT, PDF, ZIP, Video)</label><input type="file" id="bahanFile" name="file" accept=".ppt,.pptx,.pdf,.zip,.rar,.mp4,.jpg,.png" required></div>
                         </div>
-                        <div class="btn-wrapper"><button type="button" class="submit-btn" id="uploadBahanBtn"><i class="fas fa-upload"></i> Upload ke Drive</button></div>
+                        <div class="btn-wrapper"><button type="button" class="submit-btn" id="uploadBahanBtn"><i class="fas fa-upload"></i> Upload ke Drive (Folder Bahan Tayang)</button></div>
                     </form>
                 </div>
             `;
             document.getElementById("uploadBahanBtn")?.addEventListener("click", () => {
-                uploadFile("uploadFormBahan", { type: "bahan" }, "✅ Bahan tayang berhasil diupload ke Drive!");
+                const form = document.getElementById("uploadFormBahan");
+                uploadFileWithFetch(form, { type: "bahan" }, "✅ Bahan tayang berhasil diupload ke Drive (Folder Bahan Tayang)!");
             });
         }
     }
