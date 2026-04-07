@@ -63,7 +63,6 @@
             z-index: 2;
         }
 
-        /* Header */
         .hero-header {
             position: relative;
             border-radius: 28px;
@@ -159,7 +158,6 @@
             font-weight: 400;
         }
 
-        /* 3 Tombol Utama */
         .main-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -231,7 +229,6 @@
             box-shadow: var(--shadow-lg);
         }
 
-        /* Form Card */
         .form-card {
             background: rgba(255, 255, 255, 0.97);
             backdrop-filter: blur(10px);
@@ -456,7 +453,6 @@
             opacity: 0.6;
         }
 
-        /* Toast Notification */
         .toast-msg {
             position: fixed;
             bottom: 30px;
@@ -642,6 +638,10 @@
             to { transform: rotate(360deg); }
         }
 
+        iframe {
+            display: none;
+        }
+
         @media (max-width: 750px) {
             .app-container { padding: 1rem; }
             .main-btn { padding: 0.75rem 1.2rem; font-size: 0.85rem; min-width: 140px; }
@@ -653,7 +653,6 @@
 <body>
 <div class="unified-bg">
     <div class="app-container">
-        <!-- Header -->
         <div class="hero-header">
             <img class="hero-bg" src="https://i.ibb.co.com/zTVPDtDW/Chat-GPT-Image-22-Mar-2026-19-31-08.png" alt="BKPSDM Header">
             <div class="header-content">
@@ -668,17 +667,14 @@
             </div>
         </div>
 
-        <!-- 3 Tombol Utama -->
         <div class="main-buttons" id="mainButtonsContainer">
             <button class="main-btn" data-main="biodata"><i class="fas fa-id-card"></i> Biodata Widyaiswara</button>
             <button class="main-btn" data-main="rp"><i class="fas fa-file-alt"></i> RP / RBPMP</button>
             <button class="main-btn" data-main="bahan"><i class="fas fa-chalkboard"></i> Bahan Tayang</button>
         </div>
 
-        <!-- Tempat form utama -->
         <div id="formRenderArea"></div>
         
-        <!-- Riwayat unggahan -->
         <div class="submission-list" id="submissionListPanel" style="display: none;">
             <h3><i class="fas fa-history"></i> Riwayat Unggahan Terbaru</h3>
             <div id="submissionListContainer" class="list-container">
@@ -687,7 +683,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-grid">
@@ -715,51 +710,16 @@
 </div>
 <div class="scroll-top" id="scrollTop"><i class="fas fa-arrow-up"></i></div>
 
+<iframe name="hiddenFrame" style="display:none"></iframe>
+
 <script>
-    // ======================= KONFIGURASI =======================
-    // URL Web App Google Apps Script yang sudah dideploy
+    // URL Web App Google Apps Script
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxbjh-cRAxOfZkFnzsnCDFogswKeKdxZ2DcbFgZBkRtKXAL1idnVipNek07YxmEJ7k6/exec";
     
     let activeMain = "biodata";
+    let isUploading = false;
     
-    // Fungsi upload file ke Google Drive via Apps Script
-    async function uploadFileToDrive(file, metadata) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                const base64Data = e.target.result.split(',')[1];
-                
-                const payload = {
-                    ...metadata,
-                    fileBase64: base64Data,
-                    fileName: file.name,
-                    mimeType: file.type
-                };
-                
-                try {
-                    const response = await fetch(GAS_WEBAPP_URL, {
-                        method: 'POST',
-                        mode: 'cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    const result = await response.json();
-                    if (result.success) {
-                        resolve(result);
-                    } else {
-                        reject(new Error(result.message || "Upload gagal"));
-                    }
-                } catch (error) {
-                    reject(error);
-                }
-            };
-            reader.onerror = () => reject(new Error("Gagal membaca file"));
-            reader.readAsDataURL(file);
-        });
-    }
-    
-    // Simpan data ke localStorage (riwayat lokal)
+    // Simpan ke localStorage
     function saveSubmissionToLocal(type, data) {
         let submissions = JSON.parse(localStorage.getItem("pka_materi_submissions")) || [];
         const entry = {
@@ -772,7 +732,6 @@
         if (submissions.length > 30) submissions.pop();
         localStorage.setItem("pka_materi_submissions", JSON.stringify(submissions));
         renderSubmissionList();
-        return entry;
     }
     
     function renderSubmissionList() {
@@ -806,20 +765,100 @@
         setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 300); }, 4000);
     }
     
-    async function handleUploadWithProgress(btn, uploadFn) {
+    // Upload menggunakan form submit ke iframe (menghindari CORS)
+    function uploadFile(formId, metadata, successMessage) {
+        if (isUploading) {
+            showToast("Upload sedang berjalan, harap tunggu...", true);
+            return false;
+        }
+        
+        const form = document.getElementById(formId);
+        const fileInput = form.querySelector('input[type="file"]');
+        
+        if (!fileInput.files.length) {
+            showToast("Pilih file terlebih dahulu!", true);
+            return false;
+        }
+        
+        // Validasi tambahan
+        const namaInput = form.querySelector('#rpNama, #bioNama, #bahanNama');
+        if (namaInput && !namaInput.value.trim()) {
+            showToast("Nama Widyaiswara harus diisi!", true);
+            return false;
+        }
+        
+        if (metadata.type === "bahan") {
+            const judulInput = document.getElementById("bahanJudul");
+            if (judulInput && !judulInput.value.trim()) {
+                showToast("Judul bahan tayang wajib diisi!", true);
+                return false;
+            }
+        }
+        
+        isUploading = true;
+        const btn = form.querySelector('.submit-btn');
         const originalText = btn.innerHTML;
         btn.innerHTML = `<span class="loading-spinner"></span> Mengupload...`;
         btn.disabled = true;
         
-        try {
-            await uploadFn();
-        } catch (error) {
-            console.error(error);
-            showToast(`❌ Gagal: ${error.message}`, true);
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+        // Set action form ke GAS URL
+        form.action = GAS_WEBAPP_URL;
+        form.method = "POST";
+        form.target = "hiddenFrame";
+        form.enctype = "multipart/form-data";
+        
+        // Tambahkan metadata sebagai field tersembunyi
+        let hiddenInput = form.querySelector('input[name="metadata"]');
+        if (!hiddenInput) {
+            hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'metadata';
+            form.appendChild(hiddenInput);
         }
+        hiddenInput.value = JSON.stringify(metadata);
+        
+        // Event listener untuk iframe response
+        const iframe = document.querySelector('iframe[name="hiddenFrame"]');
+        const handleLoad = function() {
+            iframe.removeEventListener('load', handleLoad);
+            setTimeout(() => {
+                isUploading = false;
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                
+                // Simpan ke localStorage dan reset form
+                const fileName = fileInput.files[0].name;
+                const submissionData = { ...metadata, namaFile: fileName };
+                
+                if (metadata.type === "biodata") {
+                    submissionData.namaWidyaiswara = document.getElementById("bioNama")?.value.trim();
+                    saveSubmissionToLocal("biodata", submissionData);
+                    document.getElementById("bioNama").value = "";
+                } else if (metadata.type === "rp") {
+                    submissionData.namaWidyaiswara = document.getElementById("rpNama")?.value.trim();
+                    submissionData.jenis = document.getElementById("rpJenis")?.value;
+                    saveSubmissionToLocal("rp", submissionData);
+                    document.getElementById("rpNama").value = "";
+                } else if (metadata.type === "bahan") {
+                    submissionData.namaWidyaiswara = document.getElementById("bahanNama")?.value.trim();
+                    submissionData.judul = document.getElementById("bahanJudul")?.value.trim();
+                    saveSubmissionToLocal("bahan", submissionData);
+                    document.getElementById("bahanNama").value = "";
+                    document.getElementById("bahanJudul").value = "";
+                }
+                
+                fileInput.value = "";
+                showToast(successMessage);
+                
+                // Hapus hidden input setelah sukses
+                if (hiddenInput) hiddenInput.remove();
+            }, 1000);
+        };
+        
+        iframe.addEventListener('load', handleLoad);
+        form.submit();
+        
+        return true;
     }
     
     function renderForm() {
@@ -829,101 +868,54 @@
             formDiv.innerHTML = `
                 <div class="form-card">
                     <div class="form-title"><i class="fas fa-id-card"></i> Upload Biodata Widyaiswara</div>
-                    <div class="form-row">
-                        <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="bioNama" placeholder="Nama lengkap Widyaiswara"></div>
-                        <div class="input-group"><label><i class="fas fa-file-pdf"></i> File Biodata (PDF/DOCX/Gambar)</label><input type="file" id="bioFile" accept=".pdf,.docx,.doc,.jpg,.png,.jpeg"></div>
-                    </div>
-                    <div class="btn-wrapper"><button class="submit-btn" id="uploadBiodataBtn"><i class="fas fa-cloud-upload-alt"></i> Upload Biodata ke Drive</button></div>
+                    <form id="uploadFormBiodata" enctype="multipart/form-data">
+                        <div class="form-row">
+                            <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="bioNama" name="namaWidyaiswara" placeholder="Nama lengkap Widyaiswara"></div>
+                            <div class="input-group"><label><i class="fas fa-file-pdf"></i> File Biodata (PDF/DOCX/Gambar)</label><input type="file" id="bioFile" name="file" accept=".pdf,.docx,.doc,.jpg,.png,.jpeg"></div>
+                        </div>
+                        <div class="btn-wrapper"><button type="button" class="submit-btn" id="uploadBiodataBtn"><i class="fas fa-cloud-upload-alt"></i> Upload Biodata ke Drive</button></div>
+                    </form>
                 </div>
             `;
-            document.getElementById("uploadBiodataBtn")?.addEventListener("click", async () => {
-                const nama = document.getElementById("bioNama")?.value.trim();
-                const fileInput = document.getElementById("bioFile");
-                if(!nama) { showToast("Nama Widyaiswara harus diisi", true); return; }
-                if(!fileInput.files.length) { showToast("Pilih file biodata", true); return; }
-                const file = fileInput.files[0];
-                const btn = document.getElementById("uploadBiodataBtn");
-                
-                await handleUploadWithProgress(btn, async () => {
-                    await uploadFileToDrive(file, {
-                        type: "biodata",
-                        namaWidyaiswara: nama
-                    });
-                    saveSubmissionToLocal("biodata", { namaWidyaiswara: nama, namaFile: file.name });
-                    showToast(`✅ Biodata "${nama}" berhasil diupload ke Drive!`);
-                    fileInput.value = "";
-                    document.getElementById("bioNama").value = "";
-                });
+            document.getElementById("uploadBiodataBtn")?.addEventListener("click", () => {
+                uploadFile("uploadFormBiodata", { type: "biodata" }, "✅ Biodata berhasil diupload ke Drive!");
             });
         }
         else if (activeMain === "rp") {
             formDiv.innerHTML = `
                 <div class="form-card">
                     <div class="form-title"><i class="fas fa-file-alt"></i> Upload Dokumen RP / RBPMP</div>
-                    <div class="form-row">
-                        <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="rpNama" placeholder="Nama lengkap"></div>
-                        <div class="input-group"><label><i class="fas fa-tag"></i> Jenis Dokumen</label><select id="rpJenis"><option value="RP">RP (Rencana Pembelajaran)</option><option value="RBPMP">RBPMP (Rencana Bahan Penilaian)</option></select></div>
-                        <div class="input-group"><label><i class="fas fa-file"></i> File (PDF/DOCX)</label><input type="file" id="rpFile" accept=".pdf,.docx,.doc"></div>
-                    </div>
-                    <div class="btn-wrapper"><button class="submit-btn" id="uploadRpBtn"><i class="fas fa-cloud-upload-alt"></i> Upload ke Drive</button></div>
+                    <form id="uploadFormRp" enctype="multipart/form-data">
+                        <div class="form-row">
+                            <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="rpNama" name="namaWidyaiswara" placeholder="Nama lengkap"></div>
+                            <div class="input-group"><label><i class="fas fa-tag"></i> Jenis Dokumen</label><select id="rpJenis" name="jenis"><option value="RP">RP (Rencana Pembelajaran)</option><option value="RBPMP">RBPMP (Rencana Bahan Penilaian)</option></select></div>
+                            <div class="input-group"><label><i class="fas fa-file"></i> File (PDF/DOCX)</label><input type="file" id="rpFile" name="file" accept=".pdf,.docx,.doc"></div>
+                        </div>
+                        <div class="btn-wrapper"><button type="button" class="submit-btn" id="uploadRpBtn"><i class="fas fa-cloud-upload-alt"></i> Upload ke Drive</button></div>
+                    </form>
                 </div>
             `;
-            document.getElementById("uploadRpBtn")?.addEventListener("click", async () => {
-                const nama = document.getElementById("rpNama")?.value.trim();
+            document.getElementById("uploadRpBtn")?.addEventListener("click", () => {
                 const jenis = document.getElementById("rpJenis")?.value;
-                const fileInput = document.getElementById("rpFile");
-                if(!nama) { showToast("Nama Widyaiswara harus diisi", true); return; }
-                if(!fileInput.files.length) { showToast("Pilih file", true); return; }
-                const file = fileInput.files[0];
-                const btn = document.getElementById("uploadRpBtn");
-                
-                await handleUploadWithProgress(btn, async () => {
-                    await uploadFileToDrive(file, {
-                        type: "rp",
-                        jenis: jenis,
-                        namaWidyaiswara: nama
-                    });
-                    saveSubmissionToLocal("rp", { jenis, namaWidyaiswara: nama, namaFile: file.name });
-                    showToast(`✅ Dokumen ${jenis} berhasil diupload ke Drive!`);
-                    fileInput.value = "";
-                    document.getElementById("rpNama").value = "";
-                });
+                uploadFile("uploadFormRp", { type: "rp", jenis: jenis }, `✅ Dokumen ${jenis} berhasil diupload ke Drive!`);
             });
         }
         else if (activeMain === "bahan") {
             formDiv.innerHTML = `
                 <div class="form-card">
                     <div class="form-title"><i class="fas fa-chalkboard"></i> Upload Bahan Tayang / Materi</div>
-                    <div class="form-row">
-                        <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="bahanNama" placeholder="Nama lengkap"></div>
-                        <div class="input-group"><label><i class="fas fa-heading"></i> Judul Bahan Tayang</label><input type="text" id="bahanJudul" placeholder="Judul materi"></div>
-                        <div class="input-group"><label><i class="fas fa-file"></i> File (PPT, PDF, ZIP, Video)</label><input type="file" id="bahanFile" accept=".ppt,.pptx,.pdf,.zip,.rar,.mp4,.jpg,.png"></div>
-                    </div>
-                    <div class="btn-wrapper"><button class="submit-btn" id="uploadBahanBtn"><i class="fas fa-upload"></i> Upload ke Drive</button></div>
+                    <form id="uploadFormBahan" enctype="multipart/form-data">
+                        <div class="form-row">
+                            <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="bahanNama" name="namaWidyaiswara" placeholder="Nama lengkap"></div>
+                            <div class="input-group"><label><i class="fas fa-heading"></i> Judul Bahan Tayang</label><input type="text" id="bahanJudul" name="judul" placeholder="Judul materi"></div>
+                            <div class="input-group"><label><i class="fas fa-file"></i> File (PPT, PDF, ZIP, Video)</label><input type="file" id="bahanFile" name="file" accept=".ppt,.pptx,.pdf,.zip,.rar,.mp4,.jpg,.png"></div>
+                        </div>
+                        <div class="btn-wrapper"><button type="button" class="submit-btn" id="uploadBahanBtn"><i class="fas fa-upload"></i> Upload ke Drive</button></div>
+                    </form>
                 </div>
             `;
-            document.getElementById("uploadBahanBtn")?.addEventListener("click", async () => {
-                const nama = document.getElementById("bahanNama")?.value.trim();
-                const judul = document.getElementById("bahanJudul")?.value.trim();
-                const fileInput = document.getElementById("bahanFile");
-                if(!nama) { showToast("Nama Widyaiswara harus diisi", true); return; }
-                if(!judul) { showToast("Judul bahan tayang wajib diisi", true); return; }
-                if(!fileInput.files.length) { showToast("Pilih file", true); return; }
-                const file = fileInput.files[0];
-                const btn = document.getElementById("uploadBahanBtn");
-                
-                await handleUploadWithProgress(btn, async () => {
-                    await uploadFileToDrive(file, {
-                        type: "bahan",
-                        namaWidyaiswara: nama,
-                        judul: judul
-                    });
-                    saveSubmissionToLocal("bahan", { namaWidyaiswara: nama, judul, namaFile: file.name });
-                    showToast(`✅ Bahan tayang "${judul}" berhasil diupload ke Drive!`);
-                    fileInput.value = "";
-                    document.getElementById("bahanNama").value = "";
-                    document.getElementById("bahanJudul").value = "";
-                });
+            document.getElementById("uploadBahanBtn")?.addEventListener("click", () => {
+                uploadFile("uploadFormBahan", { type: "bahan" }, "✅ Bahan tayang berhasil diupload ke Drive!");
             });
         }
     }
