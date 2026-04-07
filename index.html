@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Pusat Materi PKA | BKPSDM Ciamis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #0f2c48;
+            --primary-light: #2c4e7a;
+            --accent: #b68b40;
+            --accent-dark: #9b6e2e;
+            --text-dark: #1e293b;
+            --text-muted: #5a6e8c;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --transition: all 0.2s ease;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .unified-bg {
+            background-image: url('https://i.ibb.co.com/tTHsc01C/Untitled-design.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        .unified-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 44, 72, 0.75);
+            backdrop-filter: blur(2px);
+            z-index: 0;
+        }
+
+        .app-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1.5rem 1.5rem 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header */
+        .hero-header {
+            position: relative;
+            border-radius: 24px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            min-height: 180px;
+        }
+
+        .hero-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.55) 0%, rgba(15, 44, 72, 0.75) 100%);
+            z-index: 1;
+        }
+
+        .hero-bg {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .header-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.2rem 1.8rem;
+            z-index: 2;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(6px);
+            padding: 0.4rem 1rem;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo-area img {
+            height: 48px;
+            width: auto;
+        }
+
+        .logo-area span {
+            color: white;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            font-size: 0.9rem;
+        }
+
+        .title-text {
+            text-align: right;
+        }
+
+        .title-text h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: white;
+            letter-spacing: -0.2px;
+        }
+
+        .title-text p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.75rem;
+            font-weight: 400;
+        }
+
+        /* 3 Tombol Utama */
+        .main-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .main-btn {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary-dark);
+            font-family: inherit;
+            box-shadow: var(--shadow-sm);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            justify-content: center;
+            min-width: 180px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .main-btn i {
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+
+        .main-btn.active-main {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 8px 20px rgba(30, 58, 95, 0.3);
+        }
+
+        .main-btn.active-main i {
+            color: white;
+        }
+
+        .main-btn:hover:not(.active-main) {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        /* Form Card */
+        .form-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 4px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 1.2rem;
+            border-radius: 20px;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+            font-size: 0.85rem;
+        }
+
+        .input-group label i {
+            margin-right: 6px;
+            color: var(--accent);
+        }
+
+        select, input:not([type="submit"]), textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(182, 139, 64, 0.15);
+        }
+
+        .btn-wrapper {
+            display: flex;
+            justify-content: center;
+        }
+
+        button.submit-btn {
+            background: var(--primary);
+            border: none;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            max-width: 280px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button.submit-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .submission-list {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .submission-list h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-left: 3px solid var(--accent);
+            padding-left: 12px;
+        }
+
+        .list-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .submission-item {
+            background: white;
+            border-radius: 16px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.7rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            border: 1px solid #eef2f8;
+        }
+
+        .submission-info {
+            font-size: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: baseline;
+        }
+
+        .file-badge {
+            background: rgba(182, 139, 64, 0.15);
+            padding: 3px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--accent-dark);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--primary-dark);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            box-shadow: var(--shadow-md);
+            border-left: 3px solid var(--accent);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .footer {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(8px);
+            color: #e2e8f0;
+            padding: 40px 20px 30px;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .footer-map h4, .footer-contact h4 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: white;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+
+        .footer-map h4::after, .footer-contact h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .map-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 1rem;
+            text-decoration: none;
+            display: block;
+        }
+
+        .map-icon-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .map-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .contact-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+        }
+
+        .contact-item i {
+            color: var(--accent);
+            width: 20px;
+        }
+
+        .partner-logos {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding: 20px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 20px;
+        }
+
+        .partner-logo {
+            height: 40px;
+            opacity: 0.8;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            font-size: 0.7rem;
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 44px;
+            height: 44px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 999;
+        }
+
+        .scroll-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 750px) {
+            .app-container { padding: 1rem; }
+            .main-btn { padding: 0.7rem 1rem; font-size: 0.85rem; }
+            .footer-grid { grid-template-columns: 1fr; gap: 25px; }
+        }
+    </style>
+</head>
+<body>
+<div class="unified-bg">
+    <div class="app-container">
+        <!-- Header -->
+        <div class="hero-header">
+            <img class="hero-bg" src="https://i.ibb.co.com/zTVPDtDW/Chat-GPT-Image-22-Mar-2026-19-31-08.png" alt="BKPSDM Header">
+            <div class="header-content">
+                <div class="logo-area">
+                    <img src="https://i.ibb.co.com/JWw8qHmM/logo-bkpsdm.png" alt="Logo">
+                    <span>BKPSDM CIAMIS</span>
+                </div>
+                <div class="title-text">
+                    <h1>PORTAL PENGUMPULAN MATERI PKA</h1>
+                    <p>Biodata Widyaiswara • RP/RBPMP • Bahan Tayang</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3 Tombol Utama -->
+        <div class="main-buttons" id="mainButtonsContainer">
+            <button class="main-btn" data-main="biodata"><i class="fas fa-id-card"></i> Biodata Widyaiswara</button>
+            <button class="main-btn" data-main="rp"><i class="fas fa-file-alt"></i> RP / RBPMP</button>
+            <button class="main-btn" data-main="bahan"><i class="fas fa-chalkboard"></i> Bahan Tayang</button>
+        </div>
+
+        <!-- Tempat form utama -->
+        <div id="formRenderArea"></div>
+        
+        <!-- Riwayat unggahan -->
+        <div class="submission-list" id="submissionListPanel" style="display: none;">
+            <h3><i class="fas fa-history"></i> Riwayat Unggahan Terbaru</h3>
+            <div id="submissionListContainer" class="list-container">
+                <div class="empty-state"><i class="fas fa-database"></i><p>Belum ada data.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-map">
+                    <h4><i class="fas fa-map-marker-alt"></i> Lokasi</h4>
+                    <a href="https://www.google.com/maps?q=-7.319604,108.343875" target="_blank" class="map-card">
+                        <div class="map-icon-wrapper"><div class="map-icon"><i class="fas fa-map-marked-alt"></i></div><div>BKPSDM Kab. Ciamis</div></div>
+                        <div style="font-size:0.75rem; opacity:0.8;">Jl. Sadananya No. 27, Maleber, Ciamis</div>
+                    </a>
+                </div>
+                <div class="footer-contact">
+                    <h4><i class="fas fa-headset"></i> Kontak</h4>
+                    <div class="contact-item"><i class="fas fa-envelope"></i> bidangpkabkpsdmciamis@gmail.com</div>
+                    <div class="contact-item"><i class="fas fa-phone-alt"></i> 0852 2328 5647 / 0852 2305 8394</div>
+                </div>
+            </div>
+            <div class="partner-logos">
+                <img src="https://i.ibb.co.com/tMnbFSr5/Lambang-Kabupaten-Ciamis.png" alt="Ciamis" class="partner-logo">
+                <img src="https://i.ibb.co.com/JWw8qHmM/logo-bkpsdm.png" alt="BKPSDM" class="partner-logo">
+                <img src="https://i.ibb.co.com/6JvSKyNf/Logo-Ber-AKHLAK-svg.png" alt="AKHLAK" class="partner-logo">
+            </div>
+            <div class="footer-bottom">© 2026 Pusat Materi PKA BKPSDM Ciamis</div>
+        </div>
+    </footer>
+</div>
+<div class="scroll-top" id="scrollTop"><i class="fas fa-arrow-up"></i></div>
+
+<script>
+    // ======================= KONFIGURASI FOLDER GOOGLE DRIVE (Tersembunyi) =======================
+    // Folder untuk Biodata Widyaiswara
+    const DRIVE_BIODATA_URL = "https://drive.google.com/drive/folders/14FJoYKIepFfd2fqEeYdxj6r0XFoZRjsA?usp=drive_link";
+    // Folder untuk RP dan RBPMP
+    const DRIVE_RP_RBPMP_URL = "https://drive.google.com/drive/folders/14FJoYKIepFfd2fqEeYdxj6r0XFoZRjsA?usp=drive_link";
+    // Folder untuk Bahan Tayang
+    const DRIVE_BAHAN_URL = "https://drive.google.com/drive/folders/1xN-ApCrFlIWhO4CBkqmenYLquwzeAaEj?usp=drive_link";
+    
+    // State
+    let activeMain = "biodata";
+    
+    // Simpan data ke localStorage (riwayat)
+    function saveSubmission(type, data) {
+        let submissions = JSON.parse(localStorage.getItem("pka_materi_submissions")) || [];
+        const entry = {
+            id: Date.now(),
+            type: type,
+            ...data,
+            timestamp: new Date().toLocaleString('id-ID')
+        };
+        submissions.unshift(entry);
+        if (submissions.length > 30) submissions.pop();
+        localStorage.setItem("pka_materi_submissions", JSON.stringify(submissions));
+        renderSubmissionList();
+        return entry;
+    }
+    
+    function renderSubmissionList() {
+        const container = document.getElementById("submissionListContainer");
+        const submissions = JSON.parse(localStorage.getItem("pka_materi_submissions")) || [];
+        const panel = document.getElementById("submissionListPanel");
+        if (submissions.length === 0) {
+            panel.style.display = "none";
+            return;
+        }
+        panel.style.display = "block";
+        let html = "";
+        submissions.forEach(sub => {
+            let title = "";
+            if (sub.type === "biodata") title = `👤 Biodata: ${sub.namaWidyaiswara || "-"} - ${sub.namaFile || "Upload biodata"}`;
+            else if (sub.type === "rp") title = `📄 ${sub.jenis}: ${sub.namaFile || "-"} (${sub.namaWidyaiswara || ""})`;
+            else title = `📁 Bahan Tayang: ${sub.judul || sub.namaFile || "Materi"} (${sub.namaWidyaiswara || ""})`;
+            let driveUrl = (sub.type === "bahan") ? DRIVE_BAHAN_URL : DRIVE_RP_RBPMP_URL;
+            html += `<div class="submission-item">
+                        <div class="submission-info"><strong>${title}</strong> <span class="file-badge">${sub.timestamp}</span></div>
+                        <a href="${driveUrl}" target="_blank" style="font-size:0.7rem; color:var(--accent);"><i class="fab fa-google-drive"></i> Buka Drive</a>
+                    </div>`;
+        });
+        container.innerHTML = html;
+    }
+    
+    // Render form berdasarkan main (tanpa link folder Drive yang ditampilkan)
+    function renderForm() {
+        const formDiv = document.getElementById("formRenderArea");
+        
+        // ======================= BIODATA WIDYAISWARA (tanpa kelompok/bidang) =======================
+        if (activeMain === "biodata") {
+            formDiv.innerHTML = `
+                <div class="form-card">
+                    <div class="form-title"><i class="fas fa-id-card"></i> Upload Biodata Widyaiswara</div>
+                    <div class="form-row">
+                        <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="bioNama" placeholder="Nama lengkap Widyaiswara"></div>
+                        <div class="input-group"><label><i class="fas fa-file-pdf"></i> File Biodata (PDF/DOCX/Gambar)</label><input type="file" id="bioFile" accept=".pdf,.docx,.doc,.jpg,.png,.jpeg"></div>
+                    </div>
+                    <div class="btn-wrapper"><button class="submit-btn" id="uploadBiodataBtn"><i class="fas fa-cloud-upload-alt"></i> Upload Biodata ke Drive</button></div>
+                </div>
+            `;
+            document.getElementById("uploadBiodataBtn")?.addEventListener("click", () => {
+                const nama = document.getElementById("bioNama")?.value.trim();
+                const fileInput = document.getElementById("bioFile");
+                if(!nama) { alert("Nama Widyaiswara harus diisi"); return; }
+                if(!fileInput.files.length) { alert("Pilih file biodata (PDF/DOCX/Gambar)"); return; }
+                const fileName = fileInput.files[0].name;
+                // Buka folder Drive di tab baru (tersembunyi dari tampilan form, tapi tetap membuka folder)
+                window.open(DRIVE_BIODATA_URL, "_blank");
+                saveSubmission("biodata", { namaWidyaiswara: nama, namaFile: fileName });
+                showToast(`Biodata "${nama}" siap diunggah. Silakan lanjutkan upload file ke folder Drive yang terbuka.`);
+                fileInput.value = "";
+            });
+        }
+        // ======================= RP / RBPMP (digabung) =======================
+        else if (activeMain === "rp") {
+            formDiv.innerHTML = `
+                <div class="form-card">
+                    <div class="form-title"><i class="fas fa-file-alt"></i> Upload Dokumen RP / RBPMP</div>
+                    <div class="form-row">
+                        <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="rpNama" placeholder="Nama lengkap"></div>
+                        <div class="input-group"><label><i class="fas fa-tag"></i> Jenis Dokumen</label><select id="rpJenis"><option value="RP">RP (Rencana Pembelajaran)</option><option value="RBPMP">RBPMP (Rencana Bahan Penilaian)</option></select></div>
+                        <div class="input-group"><label><i class="fas fa-file"></i> File (PDF/DOCX)</label><input type="file" id="rpFile" accept=".pdf,.docx,.doc"></div>
+                    </div>
+                    <div class="btn-wrapper"><button class="submit-btn" id="uploadRpBtn"><i class="fas fa-cloud-upload-alt"></i> Upload ke Drive</button></div>
+                </div>
+            `;
+            document.getElementById("uploadRpBtn")?.addEventListener("click", () => {
+                const nama = document.getElementById("rpNama")?.value.trim();
+                const jenis = document.getElementById("rpJenis")?.value;
+                const fileInput = document.getElementById("rpFile");
+                if(!nama) { alert("Nama Widyaiswara harus diisi"); return; }
+                if(!fileInput.files.length) { alert("Pilih file yang akan diunggah"); return; }
+                const fileName = fileInput.files[0].name;
+                window.open(DRIVE_RP_RBPMP_URL, "_blank");
+                saveSubmission("rp", { jenis, namaWidyaiswara: nama, namaFile: fileName });
+                showToast(`Dokumen ${jenis} siap diunggah. Silakan lanjutkan upload file ke folder Drive.`);
+                fileInput.value = "";
+            });
+        }
+        // ======================= BAHAN TAYANG =======================
+        else if (activeMain === "bahan") {
+            formDiv.innerHTML = `
+                <div class="form-card">
+                    <div class="form-title"><i class="fas fa-chalkboard"></i> Upload Bahan Tayang / Materi</div>
+                    <div class="form-row">
+                        <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="bahanNama" placeholder="Nama lengkap"></div>
+                        <div class="input-group"><label><i class="fas fa-heading"></i> Judul Bahan Tayang</label><input type="text" id="bahanJudul" placeholder="Judul materi"></div>
+                        <div class="input-group"><label><i class="fas fa-file"></i> File (PPT, PDF, ZIP, Video)</label><input type="file" id="bahanFile" accept=".ppt,.pptx,.pdf,.zip,.rar,.mp4,.jpg,.png,.jpeg"></div>
+                    </div>
+                    <div class="btn-wrapper"><button class="submit-btn" id="uploadBahanBtn"><i class="fas fa-upload"></i> Upload ke Drive</button></div>
+                </div>
+            `;
+            document.getElementById("uploadBahanBtn")?.addEventListener("click", () => {
+                const nama = document.getElementById("bahanNama")?.value.trim();
+                const judul = document.getElementById("bahanJudul")?.value.trim();
+                const fileInput = document.getElementById("bahanFile");
+                if(!nama) { alert("Nama Widyaiswara harus diisi"); return; }
+                if(!judul) { alert("Judul bahan tayang wajib diisi"); return; }
+                if(!fileInput.files.length) { alert("Pilih file yang akan diunggah"); return; }
+                const fileName = fileInput.files[0].name;
+                window.open(DRIVE_BAHAN_URL, "_blank");
+                saveSubmission("bahan", { namaWidyaiswara: nama, judul, namaFile: fileName });
+                showToast(`Bahan tayang "${judul}" siap diunggah. Buka folder Drive untuk menyelesaikan upload.`);
+                fileInput.value = "";
+                document.getElementById("bahanJudul").value = "";
+            });
+        }
+    }
+    
+    // Inisialisasi main buttons
+    function initMainButtons() {
+        const btns = document.querySelectorAll(".main-btn");
+        btns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const mainVal = btn.getAttribute("data-main");
+                activeMain = mainVal;
+                // update aktif class
+                btns.forEach(b => b.classList.remove("active-main"));
+                btn.classList.add("active-main");
+                renderForm();
+            });
+        });
+        // trigger default
+        document.querySelector(".main-btn[data-main='biodata']").classList.add("active-main");
+        renderForm();
+    }
+    
+    function showToast(msg) {
+        let toast = document.createElement("div"); toast.className = "toast-msg"; toast.innerHTML = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 300); }, 4000);
+    }
+    
+    // Scroll top
+    const scrollBtn = document.getElementById("scrollTop");
+    window.addEventListener("scroll", () => { if (window.scrollY > 200) scrollBtn.classList.add("active"); else scrollBtn.classList.remove("active"); });
+    scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+    
+    // Load data awal
+    initMainButtons();
+    renderSubmissionList();
+</script>
+</body>
+</html>
