@@ -267,6 +267,59 @@
             transform: translateY(-3px);
             box-shadow: 0 12px 25px rgba(30, 58, 95, 0.35);
         }
+        .info-link {
+            background: rgba(182, 139, 64, 0.12);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 3px solid var(--accent);
+            transition: var(--transition);
+        }
+        .info-link i {
+            font-size: 1.4rem;
+            color: var(--accent);
+        }
+        .info-link-content {
+            flex: 1;
+        }
+        .info-link-content .link-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            color: var(--accent-dark);
+        }
+        .info-link-content a {
+            color: var(--primary-dark);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            word-break: break-all;
+            transition: var(--transition);
+        }
+        .info-link-content a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        .info-link .copy-btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--accent-dark);
+            font-weight: 500;
+        }
+        .info-link .copy-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
         .toast-msg {
             position: fixed;
             bottom: 30px;
@@ -360,7 +413,6 @@
         }
         .contact-item:hover { transform: translateX(5px); }
         .contact-item i { color: var(--accent); width: 22px; }
-        /* Warna putih untuk teks alamat di footer */
         .map-card div[style*="font-size:0.75rem"] {
             color: white !important;
         }
@@ -412,6 +464,7 @@
             .main-btn { padding: 0.75rem 1.2rem; font-size: 0.85rem; min-width: 140px; }
             .footer-grid { grid-template-columns: 1fr; gap: 30px; }
             .form-card { padding: 1.2rem; }
+            .info-link { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -472,13 +525,11 @@
 
 <script>
     // ==================== KONFIGURASI ====================
-    // ⚠️ GANTI DENGAN URL WEB APP HASIL DEPLOY ANDA! ⚠️
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzjVOE7rxagnIrykQPoIkUPzcg6rA22TXoPBqK0Qrzx3xpnBA8HcGu1X4HKDktIPLA/exec";
     
     let activeMain = "biodata";
     let isUploading = false;
     
-    // Fungsi showToast (tetap ada untuk notifikasi)
     function showToast(msg, isError = false) {
         let toast = document.createElement("div");
         toast.className = "toast-msg";
@@ -487,7 +538,14 @@
         setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 300); }, 4000);
     }
     
-    // Konversi file ke Base64
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast("Link berhasil disalin!");
+        }).catch(() => {
+            showToast("Gagal menyalin link", true);
+        });
+    }
+    
     function fileToBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -497,7 +555,6 @@
         });
     }
     
-    // Upload file dengan Base64 (tanpa menyimpan ke localStorage)
     async function uploadFile(formElement, metadata, successMessage) {
         if (isUploading) {
             showToast("Upload sedang berjalan, harap tunggu...", true);
@@ -510,7 +567,6 @@
             return false;
         }
         
-        // Validasi
         const namaInput = formElement.querySelector('#rpNama, #bioNama, #bahanNama');
         if (namaInput && !namaInput.value.trim()) {
             showToast("Nama Widyaiswara harus diisi!", true);
@@ -532,11 +588,9 @@
         btn.disabled = true;
         
         try {
-            // Konversi file ke Base64
             const base64File = await fileToBase64(fileInput.files[0]);
             const fileName = fileInput.files[0].name;
             
-            // Siapkan metadata lengkap
             const extendedMetadata = { ...metadata };
             
             if (metadata.type === "biodata") {
@@ -549,7 +603,6 @@
                 extendedMetadata.judul = document.getElementById("bahanJudul")?.value.trim() || "";
             }
             
-            // Kirim ke GAS
             const formData = new FormData();
             formData.append("metadata", JSON.stringify(extendedMetadata));
             formData.append("fileData", base64File);
@@ -563,7 +616,6 @@
             const result = await response.json();
             
             if (result.status === "success") {
-                // Reset form setelah sukses
                 if (metadata.type === "biodata") {
                     document.getElementById("bioNama").value = "";
                 } else if (metadata.type === "rp") {
@@ -597,6 +649,14 @@
             formDiv.innerHTML = `
                 <div class="form-card">
                     <div class="form-title"><i class="fas fa-id-card"></i> Upload Biodata Widyaiswara</div>
+                    <div class="info-link">
+                        <i class="fas fa-link"></i>
+                        <div class="info-link-content">
+                            <div class="link-label">Link Template Biodata Widyaiswara</div>
+                            <a href="https://docs.google.com/document/d/1FozJaAVANQQvTFZMYewUdrxAxNoWWAp8/edit?usp=drive_link&ouid=108609213137385757602&rtpof=true&sd=true" target="_blank" id="templateLink">https://docs.google.com/document/d/1FozJaAVANQQvTFZMYewUdrxAxNoWWAp8/edit?usp=drive_link</a>
+                        </div>
+                        <button type="button" class="copy-btn" id="copyTemplateLinkBtn"><i class="fas fa-copy"></i> Salin</button>
+                    </div>
                     <form id="uploadFormBiodata" enctype="multipart/form-data">
                         <div class="form-row">
                             <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="bioNama" name="namaWidyaiswara" placeholder="Nama lengkap Widyaiswara" required></div>
@@ -610,12 +670,17 @@
                 const form = document.getElementById("uploadFormBiodata");
                 uploadFile(form, { type: "biodata" }, "✅ Biodata berhasil diupload ke Drive!");
             });
+            document.getElementById("copyTemplateLinkBtn")?.addEventListener("click", () => {
+                const linkElement = document.getElementById("templateLink");
+                if (linkElement) {
+                    copyToClipboard(linkElement.href);
+                }
+            });
         }
         else if (activeMain === "rp") {
             formDiv.innerHTML = `
                 <div class="form-card">
-                    <div class="form-title"><i class="fas fa-file-alt"></i> Upload Dokumen RP & 
-                    RBPMP</div>
+                    <div class="form-title"><i class="fas fa-file-alt"></i> Upload Dokumen RP & RBPMP</div>
                     <form id="uploadFormRp" enctype="multipart/form-data">
                         <div class="form-row">
                             <div class="input-group"><label><i class="fas fa-user"></i> Nama Widyaiswara</label><input type="text" id="rpNama" name="namaWidyaiswara" placeholder="Nama lengkap" required></div>
